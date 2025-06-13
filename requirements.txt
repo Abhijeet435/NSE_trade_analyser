@@ -1,5 +1,4 @@
-streamlit
-pandas
-numpy
-BytesIO
-datetime, timedelta
+streamlit>=1.31.1
+pandas>=2.2.2
+numpy>=1.26.4
+openpyxl>=3.1.2
