@@ -42,19 +42,23 @@ st.markdown("""
 @st.cache_data
 def load_data():
     cols = ["S.No", "Symbol", "Series", "Timestamp", "Price", "Quantity Traded"]
-    data = pd.read_csv("20090803.csv", names=cols, header=None)
+    data_parts = []
+    for i in range(1, 12):
+        part = pd.read_csv(f"part{i}.csv", names=cols, header=None)
+        data_parts.append(part)
+    data = pd.concat(data_parts, ignore_index=True)
     data["Timestamp"] = pd.to_datetime(data["Timestamp"], format="%H:%M:%S").dt.time
     return data
 
 df = load_data()
 
 st.title("NSE Trade Data Analyzer")
-st.markdown("#### Explore and analyze trade-level stock exchange data with ease")
+st.markdown("#### Analysis of the stock prices and trade of NSE")
 st.markdown("---")
 
 with st.sidebar:
     st.header("Settings")
-    
+
     symbols = st.multiselect(
         "Choose Symbol(s)", 
         sorted(df["Symbol"].unique())
@@ -75,7 +79,7 @@ if symbols:
     col1, col2 = st.columns([3, 2])
     with col1:
         st.subheader("Filter by Time Range")
-        
+
         filtered_df = df[df["Symbol"].isin(symbols)].copy()
         filtered_df["Timestamp"] = pd.to_datetime(filtered_df["Timestamp"].astype(str))
 
@@ -116,7 +120,7 @@ if symbols:
             stat1, stat2 = st.columns(2)
             stat1.metric("Total Trades", f"{final_df.shape[0]:,}")
             stat2.metric("Average Price", f"₹{final_df['Price'].mean():,.2f}")
-    
+
     with col2:
         st.subheader("Export Reports")
 
